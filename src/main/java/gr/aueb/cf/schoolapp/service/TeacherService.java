@@ -30,7 +30,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -118,5 +120,12 @@ public class TeacherService {
                 .and(TeacherSpecification.teacherUserAfmIs(filters.getUserAfm()))
                 .and(TeacherSpecification.teacherPersonalInfoAmkaIs(filters.getUserAmka()))
                 .and(TeacherSpecification.teacherIsActive(filters.getIsActive()));
+    }
+
+    public List<TeacherReadOnlyDTO> getTeachersFiltered(TeacherFilters filters) {
+        return teacherRepository.findAll(getSpecsFromFilters(filters))
+                .stream()
+                .map(mapper::mapToTeacherReadOnlyDTO)
+                .collect(Collectors.toList());
     }
 }
