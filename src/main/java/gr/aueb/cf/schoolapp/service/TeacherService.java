@@ -109,6 +109,12 @@ public class TeacherService {
     }
 
     @Transactional
+    public List<TeacherReadOnlyDTO> getTeachersFiltered(TeacherFilters filters) {
+        return teacherRepository.findAll(getSpecsFromFilters(filters))
+                .stream().map(mapper::mapToTeacherReadOnlyDTO).collect(Collectors.toList());
+    }
+
+    @Transactional
     public Paginated<TeacherReadOnlyDTO> getTeachersFilteredPaginated(TeacherFilters filters) {
         var filtered = teacherRepository.findAll(getSpecsFromFilters(filters), filters.getPageable());
         return new Paginated<>(filtered.map(mapper::mapToTeacherReadOnlyDTO));
@@ -120,12 +126,5 @@ public class TeacherService {
                 .and(TeacherSpecification.teacherUserAfmIs(filters.getUserAfm()))
                 .and(TeacherSpecification.teacherPersonalInfoAmkaIs(filters.getUserAmka()))
                 .and(TeacherSpecification.teacherIsActive(filters.getIsActive()));
-    }
-
-    public List<TeacherReadOnlyDTO> getTeachersFiltered(TeacherFilters filters) {
-        return teacherRepository.findAll(getSpecsFromFilters(filters))
-                .stream()
-                .map(mapper::mapToTeacherReadOnlyDTO)
-                .collect(Collectors.toList());
     }
 }
